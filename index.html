@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="dschool — secret Discord-style school chat" />
+    <title>dschool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body data-theme="obsidian-vault">
+    <iframe name="dschool-webhook" id="webhook-frame" hidden></iframe>
+
+    <!-- Auth screen -->
+    <div id="auth-screen" class="auth-screen">
+      <div class="auth-card">
+        <div class="brand">
+          <div class="brand-mark">d</div>
+          <div>
+            <h1>dschool</h1>
+            <p>Discord School · private class channel</p>
+          </div>
+        </div>
+
+        <div class="theme-picker" aria-label="Choose a theme">
+          <button type="button" class="theme-chip active" data-theme="obsidian-vault">
+            <span class="chip-dot"></span>
+            Obsidian Vault
+          </button>
+          <button type="button" class="theme-chip" data-theme="crimson-archive">
+            <span class="chip-dot"></span>
+            Crimson Archive
+          </button>
+          <button type="button" class="theme-chip" data-theme="horizon-desk">
+            <span class="chip-dot"></span>
+            Horizon Desk
+          </button>
+        </div>
+
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-tab="login">Sign in</button>
+          <button type="button" class="auth-tab" data-tab="register">Create account</button>
+        </div>
+
+        <form id="login-form" class="auth-form">
+          <label>
+            Username
+            <input type="text" id="login-username" autocomplete="username" required maxlength="32" />
+          </label>
+          <label>
+            Password
+            <input type="password" id="login-password" autocomplete="current-password" required />
+          </label>
+          <button type="submit" class="btn btn-primary">Enter dschool</button>
+        </form>
+
+        <form id="register-form" class="auth-form hidden">
+          <label>
+            Choose a username
+            <input type="text" id="register-username" autocomplete="username" required maxlength="32" />
+          </label>
+          <label>
+            Create a password
+            <input type="password" id="register-password" autocomplete="new-password" required minlength="6" />
+          </label>
+          <label>
+            Confirm password
+            <input type="password" id="register-confirm" autocomplete="new-password" required minlength="6" />
+          </label>
+          <button type="submit" class="btn btn-primary">Claim username</button>
+        </form>
+
+        <p id="auth-error" class="auth-error" role="alert"></p>
+        <p class="auth-note">
+          Usernames are locked to your password — nobody else can send messages as you.
+        </p>
+      </div>
+    </div>
+
+    <!-- Chat app -->
+    <div id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="brand compact">
+            <div class="brand-mark">d</div>
+            <span>dschool</span>
+          </div>
+        </div>
+
+        <nav class="channel-list">
+          <div class="channel-category">Class channels</div>
+          <button type="button" class="channel active" data-channel="general">
+            <span class="hash">#</span> general
+          </button>
+          <button type="button" class="channel" data-channel="homework">
+            <span class="hash">#</span> homework-help
+          </button>
+          <button type="button" class="channel" data-channel="afterschool">
+            <span class="hash">#</span> after-school
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-panel">
+            <div class="avatar" id="user-avatar">?</div>
+            <div class="user-meta">
+              <strong id="user-name">guest</strong>
+              <span>online · verified</span>
+            </div>
+          </div>
+          <div class="sidebar-actions">
+            <button type="button" id="theme-toggle" class="icon-btn" title="Change theme">◐</button>
+            <button type="button" id="logout-btn" class="icon-btn" title="Sign out">⏻</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="chat">
+        <header class="chat-header">
+          <div>
+            <span class="hash">#</span>
+            <span id="channel-title">general</span>
+          </div>
+          <a id="discord-link" class="discord-btn" href="#" target="_blank" rel="noopener noreferrer">
+            Open Discord server
+          </a>
+        </header>
+
+        <section id="messages" class="messages" aria-live="polite"></section>
+
+        <footer class="composer">
+          <form id="message-form">
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Message #general"
+              autocomplete="off"
+              maxlength="2000"
+              required
+            />
+            <button type="submit" class="btn btn-send" aria-label="Send message">Send</button>
+          </form>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Theme modal -->
+    <dialog id="theme-modal" class="theme-modal">
+      <div class="theme-modal-inner">
+        <h2>Pick your vibe</h2>
+        <div class="theme-grid">
+          <button type="button" class="theme-card" data-theme="obsidian-vault">
+            <div class="theme-preview obsidian"></div>
+            <strong>Obsidian Vault</strong>
+            <span>Sleek black · midnight study mode</span>
+          </button>
+          <button type="button" class="theme-card" data-theme="crimson-archive">
+            <div class="theme-preview crimson"></div>
+            <strong>Crimson Archive</strong>
+            <span>Dark maroon · old library energy</span>
+          </button>
+          <button type="button" class="theme-card" data-theme="horizon-desk">
+            <div class="theme-preview horizon"></div>
+            <strong>Horizon Desk</strong>
+            <span>Dark sky blue · late-night notes</span>
+          </button>
+        </div>
+        <button type="button" id="close-theme-modal" class="btn btn-ghost">Close</button>
+      </div>
+    </dialog>
+
+    <script src="config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/webhook.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
