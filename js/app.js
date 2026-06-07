@@ -132,7 +132,6 @@ const App = {
       const session = Auth.getSession();
       if (!session?.displayName) return;
 
-      const channelLabel = CHANNELS[App.currentChannel] || "general";
       const localMessage = App.addMessage({
         author: session.displayName,
         content: text,
@@ -143,7 +142,7 @@ const App = {
       input.focus();
 
       try {
-        await Webhook.send(text, session.displayName, channelLabel);
+        await Webhook.send(text, session.displayName);
         localMessage.pending = false;
         App.renderMessages();
       } catch (error) {
